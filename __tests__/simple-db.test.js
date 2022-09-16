@@ -1,5 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
+const crypto = require('crypto');
+const SimpleDb = require('../lib/simple-db');
 
 const { CI, HOME } = process.env;
 const BASE_DIR = CI ? HOME : __dirname;
@@ -12,8 +14,67 @@ describe('simple database', () => {
     await fs.mkdir(TEST_DIR, { recursive: true });
   });
 
-  it('needs a first test...', async () => {
+  it('get:id returns object by ID', async () => {
+    const objToFind = {
+      name: 'test',
+      age: 'newBorn'
+    };
+    const id = crypto.randomBytes(8).toString('hex');
 
+    await fs.writeFile(`${TEST_DIR}/${id}.json`, JSON.stringify(objToFind));
+    const db = new SimpleDb(TEST_DIR);
+    expect(await db.get(id)).toEqual(objToFind);
   });
 
+  it('save should save an object', async () => {
+    const objToSave = {
+      name: 'weeee',
+      age: 'new'
+    };
+    const db = new SimpleDb(TEST_DIR);
+
+    const obj = await db.save(objToSave);
+    
+    expect(await db.get(obj.id)).toEqual({ ...objToSave, id: expect.any(String) });
+  });
+
+  it('getall() should return all objects in directory', () => {
+    const objects = [
+      {
+        age: 'that',
+        name: 'sluzurp'
+      },
+      {
+        name: 'wee',
+        age: 'too young'
+      },
+      {
+        name: 'woo',
+        age: 'old enough'
+      },
+    ];
+
+    const db = new SimpleDb(TEST_DIR);
+
+    return Promise.all(objects.map(object => {
+      return db.save(object);
+    })).then(() => {return db.getAll();}).then(retrievedObjects => {
+      expect(retrievedObjects).toEqual([
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        },
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        },
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        }
+      ]);});
+  });
 });
