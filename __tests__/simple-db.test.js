@@ -38,11 +38,11 @@ describe('simple database', () => {
     expect(await db.get(obj.id)).toEqual({ ...objToSave, id: expect.any(String) });
   });
 
-  it('getall() should return all objects in directory', async () => {
+  it.only('getall() should return all objects in directory', async () => {
     const objects = [
       {
-        age: 'that',
-        name: 'sluzurp'
+        name: 'sluzurp',
+        age: 'that'
       },
       {
         name: 'wee',
@@ -57,7 +57,7 @@ describe('simple database', () => {
     const db = new SimpleDb(TEST_DIR);
 
     objects.forEach(async object => {
-      await db.save(object);
+      return await db.save(object);
     });
 
     expect(await db.getAll()).toEqual([
