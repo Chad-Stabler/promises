@@ -38,4 +38,48 @@ describe('simple database', () => {
     expect(await db.get(obj.id)).toEqual({ ...objToSave, id: expect.any(String) });
   });
 
+  it('getall() should return all objects in directory', async () => {
+    const objects = [
+      {
+        age: 'that',
+        name: 'sluzurp'
+      },
+      {
+        name: 'wee',
+        age: 'too young'
+      },
+      {
+        name: 'woo',
+        age: 'old enough'
+      },
+    ];
+
+    const db = new SimpleDb(TEST_DIR);
+
+    objects.forEach(async object => {
+      await db.save(object);
+    });
+
+    expect(await db.getAll()).toEqual([
+      {
+        name: expect.any(String),
+        age: expect.any(String),
+        id: expect.any(String)
+      },
+      {
+        name: expect.any(String),
+        age: expect.any(String),
+        id: expect.any(String)
+      },
+      {
+        name: expect.any(String),
+        age: expect.any(String),
+        id: expect.any(String)
+      }
+    ].sort((a, b) => {
+      if (a.name < b.name) return -1;
+      else if (a.name > b.name) return 1;
+      else return 0;
+    }));
+  });
 });
