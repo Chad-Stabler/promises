@@ -38,7 +38,7 @@ describe('simple database', () => {
     expect(await db.get(obj.id)).toEqual({ ...objToSave, id: expect.any(String) });
   });
 
-  it('getall() should return all objects in directory', async () => {
+  it('getall() should return all objects in directory', () => {
     const objects = [
       {
         age: 'that',
@@ -56,26 +56,25 @@ describe('simple database', () => {
 
     const db = new SimpleDb(TEST_DIR);
 
-    objects.forEach(async object => {
-      await db.save(object);
-    });
-
-    expect(await db.getAll()).toEqual([
-      {
-        name: expect.any(String),
-        age: expect.any(String),
-        id: expect.any(String)
-      },
-      {
-        name: expect.any(String),
-        age: expect.any(String),
-        id: expect.any(String)
-      },
-      {
-        name: expect.any(String),
-        age: expect.any(String),
-        id: expect.any(String)
-      }
-    ]);
+    return Promise.all(objects.map(object => {
+      return db.save(object);
+    })).then(() => {return db.getAll();}).then(retrievedObjects => {
+      expect(retrievedObjects).toEqual([
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        },
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        },
+        {
+          name: expect.any(String),
+          age: expect.any(String),
+          id: expect.any(String)
+        }
+      ]);});
   });
 });
